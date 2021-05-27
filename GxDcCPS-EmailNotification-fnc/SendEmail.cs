@@ -234,10 +234,11 @@ RegexOptions.IgnoreCase);
 
                         log.Info($"Send email to {i} successfully.");
                     }
-                    break
-                    default:
-                    log.Info($"The status was {status}. This status is not part of the switch statement.")
-            }
+                    break;
+                default:
+                    log.Info($"The status was {status}. This status is not part of the switch statement.");
+                    break;
+            };
 
         }
     }
