@@ -155,13 +155,20 @@ namespace GxDcCPSEmailNotificationfnc
                     },
 
                     };
-                    
-                    await graphClient.Users[EmailSender]
+                    try
+                    {
+                     await graphClient.Users[EmailSender]
                         .SendMail(submitMsg)
                         .Request()
                         .PostAsync();
 
                     log.Info($"Send email to {requesterEmail} successfully.");
+                    }
+                    catch (ServiceException e)
+                    {
+                        log.Info($"Error: {e.StatusCode}");
+                    }
+                
                     break;
 
                 case "Rejected":
