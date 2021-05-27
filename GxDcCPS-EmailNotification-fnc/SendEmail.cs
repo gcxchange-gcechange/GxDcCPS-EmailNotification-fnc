@@ -20,11 +20,9 @@ namespace GxDcCPSEmailNotificationfnc
         public static void Run([QueueTrigger("email-info", Connection = "")] SiteInfo myQueueItem, TraceWriter log)
         {
             log.Info($"C# Queue trigger function processed: {myQueueItem}");
-            string appOnlyId = ConfigurationManager.AppSettings["AppOnlyID"];
-            string appOnlySecret = ConfigurationManager.AppSettings["AppOnlySecret"];
-
+            string EmailSender = ConfigurationManager.AppSettings["Emailsender"];
+      
             var siteUrl = myQueueItem.siteUrl;
-
             var displayName = myQueueItem.displayName;
             var emails = myQueueItem.emails;
             var comments = myQueueItem.comments;
@@ -34,7 +32,7 @@ namespace GxDcCPSEmailNotificationfnc
 
             var authResult = GetOneAccessToken();
             var graphClient = GetGraphClient(authResult);
-            SendEmailToUser(graphClient, log, emails, siteUrl, displayName, status, comments, requester, requesterEmail);
+            SendEmailToUser(graphClient, log, emails, siteUrl, displayName, status, comments, requester, requesterEmail, EmailSender);
 
         }
         /// <summary>
@@ -131,7 +129,7 @@ namespace GxDcCPSEmailNotificationfnc
         /// <param name="comments"></param>
         /// <param name="requester"></param>
         /// <param name="requesterEmail"></param>
-        public static async void SendEmailToUser(GraphServiceClient graphClient, TraceWriter log, string emails, string siteUrl, string displayName, string status, string comments, string requester, string requesterEmail)
+        public static async void SendEmailToUser(GraphServiceClient graphClient, TraceWriter log, string emails, string siteUrl, string displayName, string status, string comments, string requester, string requesterEmail, string EmailSender)
         {
 
             switch (status)
@@ -157,8 +155,8 @@ namespace GxDcCPSEmailNotificationfnc
                     },
 
                     };
-
-                    await graphClient.Users["gcxdev@tbssctdev.onmicrosoft.com"]
+                    
+                    await graphClient.Users[EmailSender]
                         .SendMail(submitMsg)
                         .Request()
                         .PostAsync();
@@ -190,7 +188,7 @@ namespace GxDcCPSEmailNotificationfnc
 
                     //     var saveToSentItems = false;
 
-                    await graphClient.Users["gcxdev@tbssctdev.onmicrosoft.com"]
+                    await graphClient.Users[EmailSender]
                         .SendMail(rejectMsg)
                         .Request()
                         .PostAsync();
@@ -227,7 +225,7 @@ RegexOptions.IgnoreCase);
 
                         var saveToSentItems = false;
 
-                        await graphClient.Users["gcxdev@tbssctdev.onmicrosoft.com"]
+                        await graphClient.Users[EmailSender]
                             .SendMail(message, saveToSentItems)
                             .Request()
                             .PostAsync();
