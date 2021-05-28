@@ -166,7 +166,7 @@ namespace GxDcCPSEmailNotificationfnc
                     }
                     catch (ServiceException e)
                     {
-                        log.Info($"Error: {e.StatusCode}");
+                        log.Info($"Error: {e.Message}");
                     }
                 
                     break;
