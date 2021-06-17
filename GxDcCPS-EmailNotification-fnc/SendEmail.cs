@@ -21,6 +21,7 @@ namespace GxDcCPSEmailNotificationfnc
         {
             log.Info($"C# Queue trigger function processed: {myQueueItem}");
             string EmailSender = ConfigurationManager.AppSettings["Emailsender"];
+            string HD_Email = ConfigurationManager.AppSettings["HD_Email"];
       
             var siteUrl = myQueueItem.siteUrl;
             var displayName = myQueueItem.displayName;
@@ -32,7 +33,7 @@ namespace GxDcCPSEmailNotificationfnc
 
             var authResult = GetOneAccessToken();
             var graphClient = GetGraphClient(authResult);
-            SendEmailToUser(graphClient, log, emails, siteUrl, displayName, status, comments, requester, requesterEmail, EmailSender);
+            SendEmailToUser(graphClient, log, emails, siteUrl, displayName, status, comments, requester, requesterEmail, EmailSender, HD_Email);
 
         }
         /// <summary>
@@ -129,7 +130,7 @@ namespace GxDcCPSEmailNotificationfnc
         /// <param name="comments"></param>
         /// <param name="requester"></param>
         /// <param name="requesterEmail"></param>
-        public static async void SendEmailToUser(GraphServiceClient graphClient, TraceWriter log, string emails, string siteUrl, string displayName, string status, string comments, string requester, string requesterEmail, string EmailSender)
+        public static async void SendEmailToUser(GraphServiceClient graphClient, TraceWriter log, string emails, string siteUrl, string displayName, string status, string comments, string requester, string requesterEmail, string EmailSender, string HD_Email)
         {
 
             switch (status)
@@ -240,6 +241,44 @@ RegexOptions.IgnoreCase);
                         log.Info($"Send email to {i} successfully.");
                     }
                     break;
+
+                    case "Notif_HD":
+                    var HD_Msg = new Message
+                    {
+                        Subject = $"New pending request! {displayName}",
+                        Body = new ItemBody
+                        {
+                            ContentType = BodyType.Html,
+                            Content = $"<a href=\"https://gcxgce.sharepoint.com/teams/scw\">Click here</a> to review the request."
+                        },
+                        ToRecipients = new List<Recipient>()
+                    {
+                        new Recipient
+                        {
+                            EmailAddress = new EmailAddress
+                            {
+                                Address = $"{HD_Email}"
+                            }
+                        }
+                    },
+
+                    };
+                    try
+                    {
+                     await graphClient.Users[EmailSender]
+                        .SendMail(HD_Msg)
+                        .Request()
+                        .PostAsync();
+
+                    log.Info($"Send email to {HD_Email} successfully.");
+                    }
+                    catch (ServiceException e)
+                    {
+                        log.Info($"Error: {e.Message}");
+                    }
+                
+                    break;
+
                 default:
                     log.Info($"The status was {status}. This status is not part of the switch statement.");
                     break;

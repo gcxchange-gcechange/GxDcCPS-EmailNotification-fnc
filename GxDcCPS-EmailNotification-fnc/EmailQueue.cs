@@ -75,6 +75,11 @@ namespace GxDcCPSEmailNotificationfnc
                     siteInfo.comments = comments;
                     siteInfo.requesterEmail = requesterEmail;
                     break;
+
+                case "Notif_HD":
+                    siteInfo.displayName = dispalyName;
+                    siteInfo.status = status;
+                    break;
             }
 
             string serializedMessage = JsonConvert.SerializeObject(siteInfo);
