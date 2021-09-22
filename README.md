@@ -1,6 +1,3 @@
-This project can create Teams with Azure function.
+# GxDcCPS-EmailNotification-fnc
 
-This line for test pipeline.
-This line for test pipeline.
-This line for test pipeline.
-This line for test pipeline.
+This function create and send email for the SCW project.
